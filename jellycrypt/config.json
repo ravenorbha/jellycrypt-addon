@@ -1,26 +1,25 @@
 {
   "name": "JellyCrypt Encrypted Media Server",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "slug": "jellycrypt",
   "description": "Encrypted media streaming via Jellyfin + gocryptfs with USB and disguise support.",
   "startup": "services",
   "boot": "auto",
   "hassio_api": false,
   "host_network": true,
+  "panel_icon": "mdi:video",
+  "panel_title": "JellyCrypt",
+  "panel_admin": false,
   "privileged": ["SYS_ADMIN"],
   "devices": ["/dev/fuse"],
   "apparmor": false,
   "map": ["media:rw", "config:rw"],
   "options": {
     "password": "changeme",
-    "encrypted_path": "/media/encrypted_media",
-    "decrypted_path": "/media/decrypted_mount",
     "disguise_extension": ".wav"
   },
   "schema": {
     "password": "str",
-    "encrypted_path": "str",
-    "decrypted_path": "str",
     "disguise_extension": "str"
   }
 }
