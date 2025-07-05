@@ -1,39 +1,36 @@
 #!/bin/bash
-set -e
 
-log() {
-  echo "[JellyCrypt] $1"
-}
+echo "[JellyCrypt] Starting encrypted media mount..."
 
-USB_BASE="/media"
-FIRST_USB=$(find "$USB_BASE" -mindepth 1 -maxdepth 1 -type d | head -n 1)
+# Read password from config
+PASSWORD=$(jq -r '.password' /data/options.json)
+DISGUISE_EXT=$(jq -r '.disguise_extension' /data/options.json)
 
-if [ -z "$FIRST_USB" ]; then
-  log "ERROR: No USB device detected under /media"
-  exit 1
+ENCRYPTED_PATH="/media/.New folder/encrypted_media"
+MOUNT_PATH="/media/decrypted_mount"
+
+mkdir -p "$ENCRYPTED_PATH"
+mkdir -p "$MOUNT_PATH"
+
+# Initialize if not yet encrypted
+if [ ! -f "$ENCRYPTED_PATH/gocryptfs.conf" ]; then
+    echo "[JellyCrypt] Initializing encrypted folder..."
+    echo "$PASSWORD" | gocryptfs -init "$ENCRYPTED_PATH"
 fi
 
-ENCRYPTED="${FIRST_USB}/encrypted_media"
-DECRYPTED="/media/decrypted_mount"
-DISGUISE="${disguise_extension:-.wav}"
-CONF_PATH="/config/gocryptfs"
+# Mount the encrypted volume
+echo "[JellyCrypt] Mounting encrypted media..."
+echo "$PASSWORD" | gocryptfs "$ENCRYPTED_PATH" "$MOUNT_PATH"
 
-log "Detected USB storage at: $FIRST_USB"
-log "Encrypted path: $ENCRYPTED"
-log "Decrypted mount: $DECRYPTED"
-
-mkdir -p "$ENCRYPTED" "$DECRYPTED" "$CONF_PATH"
-
-if [ ! -f "$CONF_PATH/gocryptfs.conf" ]; then
-    echo "$password" | gocryptfs -init -plaintextnames "$ENCRYPTED"
-    log "Initialized encrypted directory."
+# Optional: disguise extensions (basic rename)
+if [ "$DISGUISE_EXT" != "none" ]; then
+    echo "[JellyCrypt] Disguising media extensions as $DISGUISE_EXT"
+    find "$MOUNT_PATH" -type f | while read f; do
+        ext="${f##*.}"
+        [ "$ext" != "$DISGUISE_EXT" ] && mv "$f" "$f.$DISGUISE_EXT"
+    done
 fi
 
-echo "$password" | gocryptfs -extpass "cat" -plaintextnames "$ENCRYPTED" "$DECRYPTED"
-log "Mounted encrypted volume."
-
-find "$ENCRYPTED" -type f ! -name "*$DISGUISE" -exec bash -c 'mv "$0" "$0'$DISGUISE'"' {} \;
-log "Applied disguise extension to encrypted files."
-
-log "Starting Jellyfin..."
-jellyfin --datadir /config/jellyfin --cachedir /config/jellyfin-cache --ffmpeg /usr/bin/ffmpeg --mediafolders "$DECRYPTED"
+# Start Jellyfin
+echo "[JellyCrypt] Starting Jellyfin..."
+exec /usr/bin/jellyfin
