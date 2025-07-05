@@ -21,5 +21,6 @@
   "schema": {
     "password": "str",
     "disguise_extension": "str"
-  }
+  },
+  "arch": ["amd64", "aarch64", "armv7", "i386"]
 }
