@@ -9,11 +9,16 @@ RUN apt-get update && \
     curl \
     ffmpeg \
     gnupg2 \
-    ca-certificates && \
+    ca-certificates \
+    jq && \
     curl -fsSL https://repo.jellyfin.org/jellyfin_team.gpg.key | gpg --dearmor -o /usr/share/keyrings/jellyfin.gpg && \
     echo "deb [signed-by=/usr/share/keyrings/jellyfin.gpg] https://repo.jellyfin.org/debian bullseye main" > /etc/apt/sources.list.d/jellyfin.list && \
     apt-get update && \
-    apt-get install -y jellyfin && \
+    apt-get install -y \
+    jellyfin \
+    jellyfin-web \
+    jellyfin-server \
+    jellyfin-ffmpeg5 && \
     apt-get clean
 
 COPY run.sh /run.sh
