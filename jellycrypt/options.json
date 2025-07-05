@@ -1,0 +1,6 @@
+{
+  "password": "changeme",
+  "encrypted_path": "/media/encrypted_media",
+  "decrypted_path": "/media/decrypted_mount",
+  "disguise_extension": ".wav"
+}
