@@ -1,26 +1,16 @@
 {
-  "name": "JellyCrypt Encrypted Media Server",
+  "name": "JellyCrypt",
   "version": "1.2.0",
   "slug": "jellycrypt",
-  "description": "Encrypted media streaming via Jellyfin + gocryptfs with USB and disguise support.",
-  "startup": "services",
+  "description": "Jellyfin with gocryptfs support, running from encrypted USB media.",
+  "arch": ["amd64"],
+  "startup": "application",
   "boot": "auto",
-  "hassio_api": false,
   "host_network": true,
-  "panel_icon": "mdi:video",
-  "panel_title": "JellyCrypt",
-  "panel_admin": false,
-  "privileged": ["SYS_ADMIN"],
+  "privileged": ["SYS_ADMIN", "DAC_READ_SEARCH"],
   "devices": ["/dev/fuse"],
-  "apparmor": false,
-  "map": ["media:rw", "config:rw"],
-  "options": {
-    "password": "changeme",
-    "disguise_extension": ".wav"
-  },
-  "schema": {
-    "password": "str",
-    "disguise_extension": "str"
-  },
-  "arch": ["amd64", "aarch64", "armv7", "i386"]
+  "map": ["media:rw"],
+  "options": {},
+  "schema": {},
+  "image": "local/amd64-addon-jellycrypt"
 }
