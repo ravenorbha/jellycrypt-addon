@@ -11,6 +11,5 @@
   "devices": ["/dev/fuse"],
   "map": ["media:rw"],
   "options": {},
-  "schema": {},
-  "image": "local/amd64-addon-jellycrypt"
+  "schema": {}
 }
