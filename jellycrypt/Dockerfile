@@ -3,21 +3,21 @@ FROM debian:bookworm
 ENV DEBIAN_FRONTEND=noninteractive
 ENV JELLYFIN_VERSION=10.10.7
 
-# Install core tools
+# Install safe core tools only
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         fuse3 \
         curl \
-        ffmpeg \
         gnupg2 \
         ca-certificates \
         jq \
         unzip \
-        tar && \
+        tar \
+        udev && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Install gocryptfs manually
+# Install gocryptfs manually (latest working release)
 RUN curl -fSL https://github.com/rfjakob/gocryptfs/releases/download/v2.5.1/gocryptfs-v2.5.1-linux-amd64 \
     -o /usr/local/bin/gocryptfs && \
     chmod +x /usr/local/bin/gocryptfs
@@ -30,6 +30,7 @@ RUN mkdir -p /opt/jellyfin && \
     ln -s /opt/jellyfin/jellyfin /usr/bin/jellyfin && \
     rm -rf /tmp/*
 
+# Add and prepare the startup script
 COPY run.sh /run.sh
 RUN chmod +x /run.sh
 
